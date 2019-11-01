@@ -28,7 +28,7 @@ twitter_username: TylerMathis__
 github_username:  TylerMathis
 
 # Build settings
-theme: minima
+theme: jekyll-text-theme
 plugins:
   - jekyll-feed
 
