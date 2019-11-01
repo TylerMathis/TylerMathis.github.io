@@ -28,7 +28,7 @@ twitter_username: TylerMathis__
 github_username:  TylerMathis
 
 # Build settings
-theme: remote_theme: kitian616/jekyll-TeXt-theme
+remote_theme: kitian616/jekyll-TeXt-theme
 plugins:
   - jekyll-feed
 
