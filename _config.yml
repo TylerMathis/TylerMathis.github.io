@@ -21,14 +21,14 @@
 title: Tyler Hostler-Mathis
 email: tylerhm@knights.ucf.edu
 description: >- # this means to ignore newlines until "baseurl:"
-  Hub for all of Tyler Hostler-Mathis's projects.
+        A hub for Tyler Hostler-Mathis's projects
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: TylerMathis__
 github_username:  TylerMathis
 
 # Build settings
-theme: jekyll-theme-midnight 
+theme: minima
 plugins:
   - jekyll-feed
 
