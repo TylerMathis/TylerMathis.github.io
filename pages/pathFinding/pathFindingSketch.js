@@ -1,15 +1,20 @@
 var cellSize, cellsX, cellsY, numCells;
 var cells = [];
-var walls = [];
 
-var cellQuantity = 50;
+var cellQuantity = 25;
 
 var xLoc;
 var yLoc;
 
 var wallMode = true;
+var startMode = false;
+var endMode = false;
+
+var solving = false;
 
 var place = 0;
+
+var startX, startY;
 
 var menuHeight = 50;
 
@@ -22,6 +27,8 @@ function setup()
 function draw()
 {
   background(0);
+  if (solving)
+    updateFrontier();
   drawCells();
   drawMenu();
 }
@@ -30,9 +37,11 @@ function drawMenu()
 {
   noStroke();
   fill(0, 100, 200);
-  rect(0, 0, windowWidth / 2, menuHeight);
+  rect(0, 0, windowWidth / 3, menuHeight);
   fill(0);
-  rect(windowWidth / 2, 0, windowWidth / 2, menuHeight);
+  rect(windowWidth / 3, 0, windowWidth / 2, menuHeight);
+  fill (200, 0, 200);
+  rect(2 * windowWidth / 3, 0, windowWidth / 3, menuHeight);
   stroke(0);
 }
 
@@ -43,10 +52,12 @@ function drawCells()
     {
       stroke(0);
       fill (255);
-      if (cells[x][y] == 1)
+      if (cells[x][y].start == 1)
         fill (0, 100, 200);
-      if (walls[x][y] == 1)
+      if (cells[x][y].wall == 1)
         fill (0);
+      if (cells[x][y].end == 1)
+        fill (200, 0, 200);
       
       rect(x * cellSize, (y * cellSize) + menuHeight, cellSize, cellSize);
     }
@@ -64,14 +75,23 @@ function resizeGrid()
   {
     cells[x] = [];
     for (var y = 0; y < cellsY; y++)
-      cells[x][y] = 0;
+      cells[x][y] = {
+          start: 0,
+          wall: 0,
+          end: 0,
+          frontier: 0,
+          visited: 0,
+          cameFrom: -1};
   }
+}
+
+function updateFrontier()
+{
   for (var x = 0; x < cellsX; x++)
-  {
-    walls[x] = [];
     for (var y = 0; y < cellsY; y++)
-      walls[x][y] = 0;
-  }
+    {
+      if 
+    }
 }
 
 // called when screen is resized
@@ -81,30 +101,56 @@ function windowResized()
   resizeGrid();
 }
 
+// on click
 function mousePressed() {
+  // handle menu options
   if (mouseY < menuHeight)
   {
-    if (mouseX < windowWidth / 2)
+    if (mouseX < windowWidth / 3)
+    {
+      startMode = true;
       wallMode = false;
-    else
+      endMode = false;
+    }
+    else if (mouseX < 2 * windowWidth / 3)
+    {
+      startMode = false;
       wallMode = true;
+      endMode = false;
+    }
+    else
+    {
+      startMode = false;
+      wallMode = false;
+      endMode = true;
+    }
   }
+  // otherwise invert a block
   else
   {
     xLoc = parseInt(mouseX / cellSize);
     yLoc = parseInt((mouseY - menuHeight) / cellSize);
-
-    place = 0;
-    if (walls[xLoc][yLoc] == 0)
-      place = 1;
   
-    if (wallMode)
-      walls[xLoc][yLoc] = place;
+    place = 0;
+    if (cells[xLoc][yLoc].start == 0 &&
+        cells[xLoc][yLoc].wall == 0 &&
+        cells[xLoc][yLoc].end == 0)
+      place = 1;
+
+    if (startMode)
+    {
+      cells[xLoc][yLoc].start = place;
+      startX = xLoc;
+      startY = yLoc;
+    }
+    else if (wallMode)
+      cells[xLoc][yLoc].wall = place;
     else
-      cells[xLoc][yLoc] = place;
+      cells[xLoc][yLoc].end = place;
   }
 }
 
+// only matters for walls
 function mouseDragged()
 {
   if (wallMode)
@@ -114,9 +160,24 @@ function mouseDragged()
     
     if (newXLoc != xLoc || newYLoc != yLoc)
     {
-      walls[xLoc][yLoc] = place;
+      cells[xLoc][yLoc].wall = place;
       xLoc = newXLoc;
       yLoc = newYLoc;
+    }
+  }
+}
+
+function keyPressed()
+{
+  if (keyCode == ENTER)
+  {
+    if (solving == false)
+    {
+      solving == true;
+      cells[xStart - 1][yStart].frontier = 1;
+      cells[xStart][yStart + 1].frontier = 1;
+      cells[xStart + 1][yStart].frontier = 1;
+      cells[xStart][yStart - 1].frontier = 1;
     }
   }
 }
