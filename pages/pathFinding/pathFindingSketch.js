@@ -1,5 +1,6 @@
 var cellSize, cellsX, cellsY, numCells;
 var cells = [];
+var frontierBuffer = [];
 
 var cellQuantity = 25;
 
@@ -14,9 +15,13 @@ var solving = false;
 
 var place = 0;
 
-var startX, startY;
+var xStart, yStart;
+var xEnd, yEnd;
 
 var menuHeight = 50;
+
+var time = 0;
+var delay = 100;
 
 function setup()
 {
@@ -26,11 +31,15 @@ function setup()
 
 function draw()
 {
-  background(0);
-  if (solving)
-    updateFrontier();
-  drawCells();
-  drawMenu();
+  if (millis() > time)
+  {
+    time += delay;
+    background(255);
+    if (solving)
+      updateFrontier();
+    drawCells();
+    drawMenu();
+  }
 }
 
 function drawMenu()
@@ -52,6 +61,10 @@ function drawCells()
     {
       stroke(0);
       fill (255);
+      if (cells[x][y].frontier == 1)
+        fill (255, 0, 0);
+      if (cells[x][y].visited == 1)
+        fill(0, 100, 200, 80);
       if (cells[x][y].start == 1)
         fill (0, 100, 200);
       if (cells[x][y].wall == 1)
@@ -74,24 +87,86 @@ function resizeGrid()
   for (var x = 0; x < cellsX; x++)
   {
     cells[x] = [];
+    frontierBuffer[x] = [];
     for (var y = 0; y < cellsY; y++)
+    {
       cells[x][y] = {
           start: 0,
           wall: 0,
           end: 0,
           frontier: 0,
           visited: 0,
-          cameFrom: -1};
+          cameFrom: -1,
+          path: 0};
+      frontierBuffer[x][y] = 0;
+    }
   }
 }
 
+// expand the frontier outwards
 function updateFrontier()
 {
   for (var x = 0; x < cellsX; x++)
     for (var y = 0; y < cellsY; y++)
     {
-      if 
+      if (cells[x][y].frontier == 1)
+      {
+        if (cells[x][y].end == 1)
+        {
+          solving = false;
+          retracePath();
+        }
+        else
+        {
+          if (x - 1 >= 0)
+            if (cells[x - 1][y].visited == 0 && cells[x - 1][y].wall == 0)
+            {
+              frontierBuffer[x - 1][y] = 1;
+              cells[x - 1][y].cameFrom = 0;
+            }
+          if (y + 1 < cellsY)
+            if (cells[x][y + 1].visited == 0 && cells[x][y + 1].wall == 0)
+            {
+              frontierBuffer[x][y + 1] = 1;
+              cells[x][y + 1].cameFrom = 1;
+            }
+          if (x + 1 < cellsX)
+            if (cells[x + 1][y].visited == 0 && cells[x + 1][y].wall == 0)
+            {
+              frontierBuffer[x + 1][y] = 1;
+              cells[x - 1][y].cameFrom = 2;
+            }
+          if (y - 1 >= 0)
+            if (cells[x][y - 1].visited == 0 && cells[x][y - 1].wall == 0)
+            {
+              frontierBuffer[x][y - 1] = 1;
+              cells[x][y - 1].cameFrom = 3;
+            }
+
+          cells[x][y].frontier = 0;
+          cells[x][y].visited = 1;
+        }
+      }
     }
+    for (var x = 0; x < cellsX; x++)
+      for (var y = 0; y < cellsY; y++)
+      {
+        if (frontierBuffer[x][y] == 1)
+        {
+          cells[x][y].frontier = 1;
+          frontierBuffer[x][y] = 0;
+        }
+      }
+}
+
+function retracePath()
+{
+  var x = xEnd;
+  var y = yEnd;
+  while (cells[x][y].start == 0)
+  {
+
+  }
 }
 
 // called when screen is resized
@@ -140,13 +215,17 @@ function mousePressed() {
     if (startMode)
     {
       cells[xLoc][yLoc].start = place;
-      startX = xLoc;
-      startY = yLoc;
+      xStart = xLoc;
+      yStart = yLoc;
     }
     else if (wallMode)
       cells[xLoc][yLoc].wall = place;
     else
+    {
       cells[xLoc][yLoc].end = place;
+      xEnd = xLoc;
+      yEnd = yLoc;
+    }
   }
 }
 
@@ -173,7 +252,7 @@ function keyPressed()
   {
     if (solving == false)
     {
-      solving == true;
+      solving = true;
       cells[xStart - 1][yStart].frontier = 1;
       cells[xStart][yStart + 1].frontier = 1;
       cells[xStart + 1][yStart].frontier = 1;
