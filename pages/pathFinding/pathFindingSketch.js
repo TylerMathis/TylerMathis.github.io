@@ -65,6 +65,8 @@ function drawCells()
         fill (255, 0, 0);
       if (cells[x][y].visited == 1)
         fill(0, 100, 200, 80);
+      if (cells[x][y].path == 1)
+        fill(255, 99, 71);
       if (cells[x][y].start == 1)
         fill (0, 100, 200);
       if (cells[x][y].wall == 1)
@@ -111,40 +113,38 @@ function updateFrontier()
     {
       if (cells[x][y].frontier == 1)
       {
+        if (x - 1 >= 0)
+          if (cells[x - 1][y].visited == 0 && cells[x - 1][y].wall == 0)
+          {
+            frontierBuffer[x - 1][y] = 1;
+            cells[x - 1][y].cameFrom = 2;
+          }
+        if (y + 1 < cellsY)
+          if (cells[x][y + 1].visited == 0 && cells[x][y + 1].wall == 0)
+          {
+            frontierBuffer[x][y + 1] = 1;
+            cells[x][y + 1].cameFrom = 3;
+          }
+        if (x + 1 < cellsX)
+          if (cells[x + 1][y].visited == 0 && cells[x + 1][y].wall == 0)
+          {
+            frontierBuffer[x + 1][y] = 1;
+            cells[x + 1][y].cameFrom = 0;
+          }
+        if (y - 1 >= 0)
+          if (cells[x][y - 1].visited == 0 && cells[x][y - 1].wall == 0)
+          {
+            frontierBuffer[x][y - 1] = 1;
+            cells[x][y - 1].cameFrom = 1;
+          }
+
+        cells[x][y].frontier = 0;
+        cells[x][y].visited = 1;
+
         if (cells[x][y].end == 1)
         {
           solving = false;
           retracePath();
-        }
-        else
-        {
-          if (x - 1 >= 0)
-            if (cells[x - 1][y].visited == 0 && cells[x - 1][y].wall == 0)
-            {
-              frontierBuffer[x - 1][y] = 1;
-              cells[x - 1][y].cameFrom = 0;
-            }
-          if (y + 1 < cellsY)
-            if (cells[x][y + 1].visited == 0 && cells[x][y + 1].wall == 0)
-            {
-              frontierBuffer[x][y + 1] = 1;
-              cells[x][y + 1].cameFrom = 1;
-            }
-          if (x + 1 < cellsX)
-            if (cells[x + 1][y].visited == 0 && cells[x + 1][y].wall == 0)
-            {
-              frontierBuffer[x + 1][y] = 1;
-              cells[x - 1][y].cameFrom = 2;
-            }
-          if (y - 1 >= 0)
-            if (cells[x][y - 1].visited == 0 && cells[x][y - 1].wall == 0)
-            {
-              frontierBuffer[x][y - 1] = 1;
-              cells[x][y - 1].cameFrom = 3;
-            }
-
-          cells[x][y].frontier = 0;
-          cells[x][y].visited = 1;
         }
       }
     }
@@ -165,7 +165,29 @@ function retracePath()
   var y = yEnd;
   while (cells[x][y].start == 0)
   {
-
+    cells[x][y].path = 1;
+    switch (cells[x][y].cameFrom)
+    {
+      case 0:
+        x--;
+        print("moved left");
+        break;
+      case 1:
+        y++;
+        print("moved down");
+        break;
+      case 2:
+        x++;
+        print("moved right");
+        break;
+      case 3:
+        y--;
+        print("moved up");
+        break;
+      default:
+        print("ERROR, INVALID CAMEFROM\n");
+        break;
+    }
   }
 }
 
@@ -253,10 +275,18 @@ function keyPressed()
     if (solving == false)
     {
       solving = true;
+      
       cells[xStart - 1][yStart].frontier = 1;
+      cells[xStart - 1][yStart].cameFrom = 2;
+      
       cells[xStart][yStart + 1].frontier = 1;
+      cells[xStart][yStart + 1].cameFrom = 3;
+      
       cells[xStart + 1][yStart].frontier = 1;
+      cells[xStart + 1][yStart].cameFrom = 0;
+
       cells[xStart][yStart - 1].frontier = 1;
+      cells[xStart][yStart - 1].cameFrom = 1;
     }
   }
 }
