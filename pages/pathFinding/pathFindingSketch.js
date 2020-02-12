@@ -12,6 +12,7 @@ var startMode = false;
 var endMode = false;
 
 var solving = false;
+var done = false;
 
 var place = 0;
 
@@ -45,12 +46,20 @@ function draw()
 function drawMenu()
 {
   noStroke();
+  textSize(32);
+
   fill(0, 100, 200);
   rect(0, 0, windowWidth / 3, menuHeight);
   fill(0);
   rect(windowWidth / 3, 0, windowWidth / 2, menuHeight);
   fill (200, 0, 200);
   rect(2 * windowWidth / 3, 0, windowWidth / 3, menuHeight);
+
+  fill(255);
+  text("Start", 0 + windowWidth / 10, 2 * menuHeight / 3);
+  text("Wall", windowWidth / 3 + windowWidth / 10, 2 * menuHeight / 3);
+  text("End", 2 * windowWidth / 3 + windowWidth / 10, 2 * menuHeight / 3);
+
   stroke(0);
 }
 
@@ -144,6 +153,7 @@ function updateFrontier()
         if (cells[x][y].end == 1)
         {
           solving = false;
+          done = true;
           retracePath();
         }
       }
@@ -170,19 +180,15 @@ function retracePath()
     {
       case 0:
         x--;
-        print("moved left");
         break;
       case 1:
         y++;
-        print("moved down");
         break;
       case 2:
         x++;
-        print("moved right");
         break;
       case 3:
         y--;
-        print("moved up");
         break;
       default:
         print("ERROR, INVALID CAMEFROM\n");
@@ -199,7 +205,8 @@ function windowResized()
 }
 
 // on click
-function mousePressed() {
+function mousePressed() 
+{
   // handle menu options
   if (mouseY < menuHeight)
   {
@@ -251,6 +258,17 @@ function mousePressed() {
   }
 }
 
+function clearFlags()
+{
+  for (var x = 0; x < cellsX; x++)
+    for (var y = 0; y < cellsY; y++)
+    {
+      cells[x][y].path = 0;
+      cells[x][y].frontier = 0;
+      cells[x][y].visited = 0;
+    }
+}
+
 // only matters for walls
 function mouseDragged()
 {
@@ -271,9 +289,16 @@ function mouseDragged()
 function keyPressed()
 {
   if (keyCode == ENTER)
-    if (solving == false)
+  {
+    if (solving == false && !done)
     {
-      solving = true;
       cells[xStart][yStart].frontier = 1;
+      solving = true;
     }
+    else if (done)
+    {
+      clearFlags();
+      done = false;
+    }
+  }
 }
