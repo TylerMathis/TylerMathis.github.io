@@ -271,34 +271,9 @@ function mouseDragged()
 function keyPressed()
 {
   if (keyCode == ENTER)
-  {
     if (solving == false)
     {
       solving = true;
-      
-      if (xStart > 0)
-      {
-        cells[xStart - 1][yStart].frontier = 1;
-        cells[xStart - 1][yStart].cameFrom = 2;
-      }
-
-      if (yStart < cellsY - 1)
-      {
-        cells[xStart][yStart + 1].frontier = 1;
-        cells[xStart][yStart + 1].cameFrom = 3;
-      }
-
-      if (xStart < cellsX - 1)
-      {
-        cells[xStart + 1][yStart].frontier = 1;
-        cells[xStart + 1][yStart].cameFrom = 0;
-      }
-
-      if (yStart > 0)
-      {
-        cells[xStart][yStart - 1].frontier = 1;
-        cells[xStart][yStart - 1].cameFrom = 1;
-      }
+      cells[xStart][yStart].frontier = 1;
     }
-  }
 }
