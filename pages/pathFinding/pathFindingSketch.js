@@ -300,9 +300,10 @@ function keyPressed()
       cells[xStart][yStart].frontier = 1;
       solving = true;
     }
-    else if (done)
+    else
     {
       clearFlags();
+      solving = false;
       done = false;
     }
   }
