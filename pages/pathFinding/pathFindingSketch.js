@@ -24,6 +24,8 @@ var menuHeight = 50;
 var time = 0;
 var delay = 100;
 
+var buttons = 4;
+
 function setup()
 {
   createCanvas(windowWidth, windowHeight);
@@ -48,22 +50,35 @@ function drawMenu()
   noStroke();
   textSize(32);
 
-  var buttons = 4;
-
   fill(0, 100, 200);
-  rect(0, 0, windowWidth / 4, menuHeight);
+  if (startMode)
+    rect(0, 0, windowWidth / buttons, menuHeight + 10);
+  else
+   rect(0, 0, windowWidth / buttons, menuHeight);
+
   fill(0);
-  rect(windowWidth / 4, 0, windowWidth / 4, menuHeight);
+  if (wallMode)
+    rect(windowWidth / buttons, 0, windowWidth / buttons, menuHeight + 10);
+  else
+    rect(windowWidth / buttons, 0, windowWidth / buttons, menuHeight);
+
   fill (200, 0, 200);
-  rect(2 * windowWidth / 4, 0, windowWidth / 4, menuHeight);
+  if (endMode)
+    rect(2 * windowWidth / buttons, 0, windowWidth / buttons, menuHeight + 10);
+  else
+    rect(2 * windowWidth / buttons, 0, windowWidth / buttons, menuHeight);
+
   fill (0, 225, 100);
-  rect(3 * windowWidth / 4, 0, windowWidth / 4, menuHeight);
+  if (solving)
+    rect(3 * windowWidth / buttons, 0, windowWidth / buttons, menuHeight + 10);
+  else
+    rect(3 * windowWidth / buttons, 0, windowWidth / buttons, menuHeight);
 
   fill(255);
-  text("Start", 0 + windowWidth / 13, 2 * menuHeight / 3);
-  text("Wall", windowWidth / 4 + windowWidth / 13, 2 * menuHeight / 3);
-  text("End", 2 * windowWidth / 4 + windowWidth / 13, 2 * menuHeight / 3);
-  text("Search!", 3 * windowWidth / 4 + windowWidth / 13, 2 * menuHeight / 3);
+  text("Start", 0 + windowWidth / buttons / 4, 2 * menuHeight / 3);
+  text("Wall", windowWidth / buttons + windowWidth / buttons / 4, 2 * menuHeight / 3);
+  text("End", 2 * windowWidth / buttons + windowWidth / buttons / 4, 2 * menuHeight / 3);
+  text("Search!", 3 * windowWidth / buttons + windowWidth / buttons / 6, 2 * menuHeight / 3);
 
   stroke(0);
 }
@@ -216,19 +231,19 @@ function mousePressed()
   // handle menu options
   if (mouseY < menuHeight)
   {
-    if (mouseX < windowWidth / 4)
+    if (mouseX < windowWidth / buttons)
     {
       startMode = true;
       wallMode = false;
       endMode = false;
     }
-    else if (mouseX < 2 * windowWidth / 4)
+    else if (mouseX < 2 * windowWidth / buttons)
     {
       startMode = false;
       wallMode = true;
       endMode = false;
     }
-    else if (mouseX < 3 * windowWidth / 4)
+    else if (mouseX < 3 * windowWidth / buttons)
     {
       startMode = false;
       wallMode = false;
