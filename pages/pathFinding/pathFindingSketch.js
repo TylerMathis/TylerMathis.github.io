@@ -2,7 +2,7 @@ var cellSize, cellsX, cellsY, numCells;
 var cells = [];
 var frontierBuffer = [];
 
-var cellQuantity = 20;
+var cellQuantity = 30;
 
 var xLoc;
 var yLoc;
@@ -48,20 +48,22 @@ function drawMenu()
   noStroke();
   textSize(32);
 
+  var buttons = 4;
+
   fill(0, 100, 200);
-  rect(0, 0, windowWidth / 3, menuHeight);
+  rect(0, 0, windowWidth / 4, menuHeight);
   fill(0);
-  rect(windowWidth / 3, 0, windowWidth / 2, menuHeight);
+  rect(windowWidth / 4, 0, windowWidth / 4, menuHeight);
   fill (200, 0, 200);
-  rect(2 * windowWidth / 3, 0, windowWidth / 3, menuHeight);
+  rect(2 * windowWidth / 4, 0, windowWidth / 4, menuHeight);
+  fill (0, 225, 100);
+  rect(3 * windowWidth / 4, 0, windowWidth / 4, menuHeight);
 
   fill(255);
-  text("Start", 0 + windowWidth / 10, 2 * menuHeight / 3);
-  text("Wall", windowWidth / 3 + windowWidth / 10, 2 * menuHeight / 3);
-  text("End", 2 * windowWidth / 3 + windowWidth / 10, 2 * menuHeight / 3);
-
-  textSize(10);
-  text("Press enter to begin a breadth-first search.", windowWidth / 3 + 10, menuHeight - 5);
+  text("Start", 0 + windowWidth / 13, 2 * menuHeight / 3);
+  text("Wall", windowWidth / 4 + windowWidth / 13, 2 * menuHeight / 3);
+  text("End", 2 * windowWidth / 4 + windowWidth / 13, 2 * menuHeight / 3);
+  text("Search!", 3 * windowWidth / 4 + windowWidth / 13, 2 * menuHeight / 3);
 
   stroke(0);
 }
@@ -214,23 +216,37 @@ function mousePressed()
   // handle menu options
   if (mouseY < menuHeight)
   {
-    if (mouseX < windowWidth / 3)
+    if (mouseX < windowWidth / 4)
     {
       startMode = true;
       wallMode = false;
       endMode = false;
     }
-    else if (mouseX < 2 * windowWidth / 3)
+    else if (mouseX < 2 * windowWidth / 4)
     {
       startMode = false;
       wallMode = true;
       endMode = false;
     }
-    else
+    else if (mouseX < 3 * windowWidth / 4)
     {
       startMode = false;
       wallMode = false;
       endMode = true;
+    }
+    else
+    {
+      if (solving == false && !done)
+      {
+        cells[xStart][yStart].frontier = 1;
+        solving = true;
+      }
+      else
+      {
+        clearFlags();
+        solving = false;
+        done = false;
+      }
     }
   }
   // otherwise invert a block
@@ -287,24 +303,6 @@ function mouseDragged()
       cells[xLoc][yLoc].wall = place;
       xLoc = newXLoc;
       yLoc = newYLoc;
-    }
-  }
-}
-
-function keyPressed()
-{
-  if (keyCode == ENTER)
-  {
-    if (solving == false && !done)
-    {
-      cells[xStart][yStart].frontier = 1;
-      solving = true;
-    }
-    else
-    {
-      clearFlags();
-      solving = false;
-      done = false;
     }
   }
 }
