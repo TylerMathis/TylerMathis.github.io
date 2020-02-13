@@ -60,6 +60,9 @@ function drawMenu()
   text("Wall", windowWidth / 3 + windowWidth / 10, 2 * menuHeight / 3);
   text("End", 2 * windowWidth / 3 + windowWidth / 10, 2 * menuHeight / 3);
 
+  textSize(10);
+  text("Press enter to begin a breadth-first search.", windowWidth / 3 + 10, menuHeight - 5);
+
   stroke(0);
 }
 
@@ -169,6 +172,7 @@ function updateFrontier()
       }
 }
 
+// use the cameFrom variables to determine the shortest path
 function retracePath()
 {
   var x = xEnd;
@@ -258,6 +262,7 @@ function mousePressed()
   }
 }
 
+// clear all flags (except for wall start and end)
 function clearFlags()
 {
   for (var x = 0; x < cellsX; x++)
