@@ -16,8 +16,8 @@ var done = false;
 
 var place = 0;
 
-var xStart, yStart;
-var xEnd, yEnd;
+var xStart = 0, yStart = 0;
+var xEnd = 0, yEnd = 0;
 
 var menuHeight = 50;
 
@@ -251,7 +251,7 @@ function mousePressed()
     }
     else
     {
-      if (solving == false && !done)
+      if (!solving && !done)
       {
         cells[xStart][yStart].frontier = 1;
         solving = true;
@@ -265,7 +265,7 @@ function mousePressed()
     }
   }
   // otherwise invert a block
-  else
+  else if (!solving && !done)
   {
     xLoc = parseInt(mouseX / cellSize);
     yLoc = parseInt((mouseY - menuHeight) / cellSize);
@@ -279,6 +279,8 @@ function mousePressed()
     if (startMode)
     {
       cells[xLoc][yLoc].start = place;
+      if (cells[xStart][yStart].start == 1)
+        cells[xStart][yStart].start = 0;
       xStart = xLoc;
       yStart = yLoc;
     }
@@ -287,9 +289,17 @@ function mousePressed()
     else
     {
       cells[xLoc][yLoc].end = place;
+      if (cells[xEnd][yEnd].end == 1)
+        cells[xEnd][yEnd].end = 0;
       xEnd = xLoc;
       yEnd = yLoc;
     }
+  }
+  else
+  {
+    clearFlags();
+    solving = false;
+    done = false;
   }
 }
 
@@ -308,7 +318,7 @@ function clearFlags()
 // only matters for walls
 function mouseDragged()
 {
-  if (wallMode)
+  if (wallMode && cells[xLoc][yLoc].start == 0 && cells[xLoc][yLoc].end == 0)
   {
     var newXLoc = parseInt(mouseX / cellSize);
     var newYLoc = parseInt((mouseY - menuHeight) / cellSize);
