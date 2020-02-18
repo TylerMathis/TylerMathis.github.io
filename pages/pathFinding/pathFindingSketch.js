@@ -103,7 +103,7 @@ function drawCells()
       stroke(0);
       fill (255);
       if (cells[x][y].frontier == 1)
-        fill (255, 0, 0);
+        fill (253, 253, 150);
       if (cells[x][y].visited == 1)
         fill(0, 100, 200, 80);
       if (cells[x][y].path == 1)
