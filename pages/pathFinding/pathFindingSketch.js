@@ -24,7 +24,10 @@ var menuHeight = 50;
 var time = 0;
 var delay = 100;
 
-var buttons = 4;
+var buttons = 5;
+
+var searchTypes = ["Breadth-First", "Greedy BFS"];
+var searchType = 0;
 
 function setup()
 {
@@ -48,7 +51,7 @@ function draw()
 function drawMenu()
 {
   noStroke();
-  textSize(32);
+  textSize(30);
 
   fill(0, 100, 200);
   if (startMode)
@@ -68,17 +71,25 @@ function drawMenu()
   else
     rect(2 * windowWidth / buttons, 0, windowWidth / buttons, menuHeight);
 
+  fill (255, 99, 71);
+  rect(3 * windowWidth / buttons, 0, windowWidth / buttons, menuHeight);
+
   fill (0, 225, 100);
   if (solving)
-    rect(3 * windowWidth / buttons, 0, windowWidth / buttons, menuHeight + 10);
+    rect(4 * windowWidth / buttons, 0, windowWidth / buttons, menuHeight + 10);
   else
-    rect(3 * windowWidth / buttons, 0, windowWidth / buttons, menuHeight);
+    rect(4 * windowWidth / buttons, 0, windowWidth / buttons, menuHeight);
 
   fill(255);
-  text("Start", 0 + windowWidth / buttons / 4, 2 * menuHeight / 3);
-  text("Wall", windowWidth / buttons + windowWidth / buttons / 4, 2 * menuHeight / 3);
-  text("End", 2 * windowWidth / buttons + windowWidth / buttons / 4, 2 * menuHeight / 3);
-  text("Search!", 3 * windowWidth / buttons + windowWidth / buttons / 6, 2 * menuHeight / 3);
+  text("Start", 20, 2 * menuHeight / 3);
+  text("Wall", windowWidth / buttons + 20, 2 * menuHeight / 3);
+  text("End", 2 * windowWidth / buttons + 20, 2 * menuHeight / 3);
+  
+  textSize(20);
+  text(searchTypes[searchType], 3 * windowWidth / buttons + 10, 2 * menuHeight / 3);
+  textSize(30);
+
+  text("Search!", 4 * windowWidth / buttons + windowWidth / buttons / 6, 2 * menuHeight / 3);
 
   stroke(0);
 }
@@ -137,56 +148,85 @@ function resizeGrid()
 // expand the frontier outwards
 function updateFrontier()
 {
-  for (var x = 0; x < cellsX; x++)
-    for (var y = 0; y < cellsY; y++)
-    {
-      if (cells[x][y].frontier == 1)
-      {
-        if (x - 1 >= 0)
-          if (cells[x - 1][y].visited == 0 && cells[x - 1][y].wall == 0)
-          {
-            frontierBuffer[x - 1][y] = 1;
-            cells[x - 1][y].cameFrom = 2;
-          }
-        if (y + 1 < cellsY)
-          if (cells[x][y + 1].visited == 0 && cells[x][y + 1].wall == 0)
-          {
-            frontierBuffer[x][y + 1] = 1;
-            cells[x][y + 1].cameFrom = 3;
-          }
-        if (x + 1 < cellsX)
-          if (cells[x + 1][y].visited == 0 && cells[x + 1][y].wall == 0)
-          {
-            frontierBuffer[x + 1][y] = 1;
-            cells[x + 1][y].cameFrom = 0;
-          }
-        if (y - 1 >= 0)
-          if (cells[x][y - 1].visited == 0 && cells[x][y - 1].wall == 0)
-          {
-            frontierBuffer[x][y - 1] = 1;
-            cells[x][y - 1].cameFrom = 1;
-          }
-
-        cells[x][y].frontier = 0;
-        cells[x][y].visited = 1;
-
-        if (cells[x][y].end == 1)
-        {
-          solving = false;
-          done = true;
-          retracePath();
-        }
-      }
-    }
+  if (searchType == 0)
+  {
+    for (var x = 0; x < cellsX; x++)
+      for (var y = 0; y < cellsY; y++)
+        if (cells[x][y].frontier == 1)
+          propogateCell(x, y);
+  }
+  else
+  {
+    var bestX, bestY;
+    var minDist = Number.MAX_SAFE_INTEGER;
     for (var x = 0; x < cellsX; x++)
       for (var y = 0; y < cellsY; y++)
       {
-        if (frontierBuffer[x][y] == 1)
+        if (cells[x][y].frontier == 1)
         {
-          cells[x][y].frontier = 1;
-          frontierBuffer[x][y] = 0;
+          var dist = manhattenDist(x, xEnd, y, yEnd);
+          if (dist < minDist)
+          {
+            minDist = dist;
+            bestX = x;
+            bestY = y;
+          }
         }
       }
+    propogateCell(bestX, bestY);
+  }
+  for (var x = 0; x < cellsX; x++)
+    for (var y = 0; y < cellsY; y++)
+    {
+      if (frontierBuffer[x][y] == 1)
+      {
+        cells[x][y].frontier = 1;
+        frontierBuffer[x][y] = 0;
+      }
+    }
+}
+
+function manhattenDist(x0, x1, y0, y1)
+{
+  return abs(x1 - x0) + abs(y0 - y1);
+}
+
+function propogateCell(x, y)
+{
+  if (x - 1 >= 0)
+    if (cells[x - 1][y].visited == 0 && cells[x - 1][y].wall == 0)
+    {
+      frontierBuffer[x - 1][y] = 1;
+      cells[x - 1][y].cameFrom = 2;
+    }
+  if (y + 1 < cellsY)
+    if (cells[x][y + 1].visited == 0 && cells[x][y + 1].wall == 0)
+    {
+      frontierBuffer[x][y + 1] = 1;
+      cells[x][y + 1].cameFrom = 3;
+    }
+  if (x + 1 < cellsX)
+    if (cells[x + 1][y].visited == 0 && cells[x + 1][y].wall == 0)
+    {
+      frontierBuffer[x + 1][y] = 1;
+      cells[x + 1][y].cameFrom = 0;
+    }
+  if (y - 1 >= 0)
+    if (cells[x][y - 1].visited == 0 && cells[x][y - 1].wall == 0)
+    {
+      frontierBuffer[x][y - 1] = 1;
+      cells[x][y - 1].cameFrom = 1;
+    }
+
+  cells[x][y].frontier = 0;
+  cells[x][y].visited = 1;
+
+  if (cells[x][y].end == 1)
+  {
+    solving = false;
+    done = true;
+    retracePath();
+  }
 }
 
 // use the cameFrom variables to determine the shortest path
@@ -248,6 +288,12 @@ function mousePressed()
       startMode = false;
       wallMode = false;
       endMode = true;
+    }
+    else if (mouseX < 4 * windowWidth / buttons)
+    {
+      searchType++;
+      if (searchType > searchTypes.length - 1)
+        searchType = 0;
     }
     else
     {
