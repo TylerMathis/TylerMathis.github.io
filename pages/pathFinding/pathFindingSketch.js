@@ -26,6 +26,7 @@ var delay = 100;
 
 var buttons = 5;
 
+var searchDelays = [100, 10];
 var searchTypes = ["Breadth-First", "Greedy BFS"];
 var searchType = 0;
 
@@ -294,6 +295,8 @@ function mousePressed()
       searchType++;
       if (searchType > searchTypes.length - 1)
         searchType = 0;
+
+      delay = searchDelays[searchType];
     }
     else
     {
