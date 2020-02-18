@@ -27,7 +27,7 @@ var delay = 100;
 var buttons = 5;
 
 var searchDelays = [100, 10];
-var searchTypes = ["Breadth-First", "Greedy BFS"];
+var searchTypes = ["Breadth-First", "Greedy BFS (buggy)"];
 var searchType = 0;
 
 function setup()
