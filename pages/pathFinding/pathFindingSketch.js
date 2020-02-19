@@ -40,15 +40,11 @@ function setup()
 
 function draw()
 {
-  if (millis() > time)
-  {
-    time += delay;
-    background(255);
-    if (solving)
-      updateFrontier();
-    drawCells();
-    drawMenu();
-  }
+  background(255);
+  if (solving)
+    updateFrontier();
+  drawCells();
+  drawMenu();
 }
 
 function drawMenu()
