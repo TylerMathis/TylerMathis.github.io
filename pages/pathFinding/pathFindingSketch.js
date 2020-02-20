@@ -22,7 +22,6 @@ var xEnd = 0, yEnd = 0;
 var menuHeight = 50;
 
 var time = 0;
-var delay = 100;
 
 var buttons = 5;
 
@@ -40,11 +39,16 @@ function setup()
 
 function draw()
 {
-  background(255);
-  if (solving)
-    updateFrontier();
-  drawCells();
-  drawMenu();
+  if (millis() > time)
+  {
+    background(255);
+    if (solving)
+      updateFrontier();
+    drawCells();
+    drawMenu();
+    
+    time = millis() + searchDelays[searchType];
+  }
 }
 
 function drawMenu()
