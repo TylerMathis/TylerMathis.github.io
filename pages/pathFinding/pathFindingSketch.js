@@ -29,8 +29,6 @@ var searchDelays = [100, 10];
 var searchTypes = ["Breadth-First", "Greedy BFS"];
 var searchType = 0;
 
-var sIteration;
-
 function setup()
 {
   createCanvas(windowWidth, windowHeight);
@@ -142,7 +140,6 @@ function resizeGrid()
           frontier: 0,
           visited: 0,
           cameFrom: -1,
-          iteration: Number.MAX_SAFE_INTEGER,
           path: 0};
       frontierBuffer[x][y] = 0;
     }
@@ -177,8 +174,6 @@ function updateFrontier()
           }
         }
       }
-    print(sIteration);
-    cells[bestX][bestY].iteration = sIteration++;
     propogateCell(bestX, bestY);
   }
   for (var x = 0; x < cellsX; x++)
@@ -240,51 +235,26 @@ function retracePath()
 {
   var x = xEnd;
   var y = yEnd;
-  if (searchType == 0)
+  while (cells[x][y].start == 0)
   {
-    while (cells[x][y].start == 0)
+    cells[x][y].path = 1;
+    switch (cells[x][y].cameFrom)
     {
-      cells[x][y].path = 1;
-      switch (cells[x][y].cameFrom)
-      {
-        case 0:
-          x--;
-          break;
-        case 1:
-          y++;
-          break;
-        case 2:
-          x++;
-          break;
-        case 3:
-          y--;
-          break;
-        default:
-          print("ERROR, INVALID CAMEFROM\n");
-          break;
-      }
-    }
-  }
-  else
-  {
-    while (cells[x][y].start == 0)
-    {
-      var minIteration = Number.MAX_SAFE_INTEGER - 1;
-      var bestX, bestY;
-      for (var i = -1; i <= 1; i++)
-        for (var j = -1; j <= 1; j++)
-        {
-          if ((i == 0 || j == 0) && x + i >= 0 && x + i < cellsX && y + j >= 0 && y + j < cellsY)
-            if (cells[x + i][y + j].iteration < minIteration)
-            {
-              minIteration = cells[x + i][y + j].iteration;
-              bestX = x + i;
-              bestY = y + j;
-            }
-        }
-      cells[x][y].path = 1;
-      x = bestX;
-      y = bestY;
+      case 0:
+        x--;
+        break;
+      case 1:
+        y++;
+        break;
+      case 2:
+        x++;
+        break;
+      case 3:
+        y--;
+        break;
+      default:
+        print("ERROR, INVALID CAMEFROM\n");
+        break;
     }
   }
 }
