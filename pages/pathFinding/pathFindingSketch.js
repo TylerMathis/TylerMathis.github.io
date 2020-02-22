@@ -304,8 +304,6 @@ function mousePressed()
       {
         cells[xStart][yStart].frontier = 1;
         solving = true;
-        if (searchType == 1)
-          sIteration = 0;
       }
       else
       {
@@ -363,7 +361,6 @@ function clearFlags()
       cells[x][y].path = 0;
       cells[x][y].frontier = 0;
       cells[x][y].visited = 0;
-      cells[x][y].iteration = Number.MAX_SAFE_INTEGER;
     }
 }
 
